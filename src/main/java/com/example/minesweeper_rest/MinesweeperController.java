@@ -46,7 +46,7 @@ public class MinesweeperController {
             msg = "You win! ";
         }
 
-        return new OpenResult(ms.getGrid().get(x, y), gameOver, msg);
+        return new OpenResult(ms.getGrid(), gameOver, msg);
     }
 
     @RequestMapping(value = "/flag", method = RequestMethod.POST)
