@@ -6,7 +6,7 @@ public class Cell {
     private boolean flag;
     private int nearbyBombs;
 
-    public Cell(boolean bomb) {
+    Cell(boolean bomb) {
         this.bomb = bomb;
         this.open = false;
         this.flag = false;
@@ -17,41 +17,42 @@ public class Cell {
      * Opens cell.
      * @return true if cell contains bomb.
      */
-    public boolean open() {
+    boolean open() {
         if ( ! this.isOpen() ) {
             this.open = true;
-            return this.isBomb();
+            return this.hasBomb();
         } else {
             return false;
         }
     }
 
-    /**
-     * Toggles flag.
-     * @return flag value after toggle.
-     */
-    public boolean toggleFlag() {
+    public void toggleFlag() {
         this.flag = !this.flag;
-        return this.flag;
     }
 
     public boolean isOpen() {
         return open;
     }
 
-    public boolean isBomb() {
+    // Not exposed to player
+    boolean hasBomb() {
         return bomb;
     }
 
+    // Exposed to player
+    public boolean isBomb() {
+        return open && bomb;
+    }
+
     public boolean isFlagged() {
-        return flag;
+        return !open && flag;
     }
 
     public int getNearbyBombs() {
-        return nearbyBombs;
+        return open ? nearbyBombs : -1;
     }
 
-    public void incrementNearbyBombs() {
+    void incrementNearbyBombs() {
         this.nearbyBombs++;
     }
 }

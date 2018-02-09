@@ -2,50 +2,67 @@ package com.example.minesweeper_rest.logic;
 
 public class MinesweeperLogic {
     private final Grid grid;
+    private final long id;
 
-    private int flags;
-    private int bombs;
-    private int closedCells;
+    private boolean gameOver;
+    private boolean win;
 
-    public MinesweeperLogic(Grid grid) {
+    public MinesweeperLogic(Grid grid, long id) {
         this.grid = grid;
-        this.bombs = grid.bombs;
-        this.closedCells = grid.getAll().size();
-        this.flags = 0;
+        this.id = id;
+        this.gameOver = false;
+        this.win = false;
     }
 
     /**
      * Opens cell if possible (cell exists).
-     * @return true if cell contained bomb, false otherwise.
+     * @throws GameOverException if open is called after game has ended.
+     * @throws IndexOutOfBoundsException if x or y is out of bounds.
      */
-    public boolean open(int x, int y) {
-        Cell cell = this.grid.get(x, y);
-        if (cell == null) return false;
+    public void open(int x, int y) throws GameOverException {
+        Cell cell = this.getCell(x, y);
 
-        if ( cell.open() ) {
+        if (cell.open()) {
             this.openAllBombs();
-            return true;
+            this.end(false);
         } else {
             this.propagate(x, y);
-            this.closedCells = this.grid.getClosedCells().size();
-            return false;
+
+            if (this.grid.getClosedCells().size() == this.grid.bombs) {
+                this.end(true);
+            }
         }
     }
 
     /**
      * Toggles flag if possible (cell exists).
-     * @return true if cell existed, false otherwise.
+     * @throws GameOverException if flag is called after the game has ended.
+     * @throws IndexOutOfBoundsException if x or y is out of bounds.
      */
-    public boolean flag(int x, int y) {
-        Cell cell = this.grid.get(x, y);
-        if (cell == null) return false;
+    public void flag(int x, int y) throws GameOverException {
+        this.getCell(x, y).toggleFlag();
+    }
 
-        this.flags += cell.toggleFlag() ? 1 : -1;
-        return true;
+    private void end(boolean win) {
+        this.gameOver = true;
+        this.win = win;
+    }
+
+    private Cell getCell(int x, int y) throws GameOverException {
+        if (gameOver) {
+            throw new GameOverException();
+        }
+
+        Cell cell = this.grid.get(x, y);
+        if (cell == null) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        return cell;
     }
 
     private void openAllBombs() {
-        this.grid.getAll().stream().filter(Cell::isBomb).forEach(Cell::open);
+        this.grid.getAll().stream().filter(Cell::hasBomb).forEach(Cell::open);
     }
 
     private void propagate(int x, int y) {
@@ -57,7 +74,7 @@ public class MinesweeperLogic {
     }
 
     private void propagateIfPossible(int x, int y) {
-        if ( this.grid.get(x, y) != null && ! this.grid.get(x, y).isOpen() && ! this.grid.get(x, y).isBomb() ) {
+        if (this.grid.get(x, y) != null && ! this.grid.get(x, y).isOpen() && ! this.grid.get(x, y).hasBomb()) {
             this.propagate(x, y);
         }
     }
@@ -66,15 +83,15 @@ public class MinesweeperLogic {
         return grid;
     }
 
-    public int getFlags() {
-        return flags;
+    public boolean isGameOver() {
+        return gameOver;
     }
 
-    public int getBombs() {
-        return bombs;
+    public boolean isWin() {
+        return win;
     }
 
-    public int getClosedCells() {
-        return closedCells;
+    public long getId() {
+        return id;
     }
 }
