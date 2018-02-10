@@ -1,13 +1,14 @@
 package com.example.minesweeper_rest;
 
 import com.example.minesweeper_rest.logic.GameOverException;
+import com.example.minesweeper_rest.logic.GameIndexOutOfBoundsException;
 import com.example.minesweeper_rest.logic.MinesweeperLogic;
 import com.example.minesweeper_rest.logic.RandomGridGenerator;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -38,7 +39,7 @@ public class MinesweeperController {
             @RequestParam(value = "id") long id,
             @RequestParam(value = "x") int x,
             @RequestParam(value = "y") int y
-    ) throws GameOverException {
+    ) {
         MinesweeperLogic ms = games.get(id);
         ms.open(x, y);
         return ms;
@@ -49,7 +50,7 @@ public class MinesweeperController {
             @RequestParam(value = "id") long id,
             @RequestParam(value = "x") int x,
             @RequestParam(value = "y") int y
-    ) throws GameOverException {
+    ) {
         MinesweeperLogic ms = games.get(id);
         ms.flag(x, y);
         return ms;
@@ -60,5 +61,15 @@ public class MinesweeperController {
             @RequestParam(value = "id") long id
     ) {
         return games.get(id);
+    }
+
+    @ExceptionHandler(GameOverException.class)
+    void handleGameOverException(HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.BAD_REQUEST.value(), "Game is already over.");
+    }
+
+    @ExceptionHandler(GameIndexOutOfBoundsException.class)
+    void handleGameIndexOutOfBoundsException(HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.BAD_REQUEST.value(), "Coordinates out of bounds.");
     }
 }

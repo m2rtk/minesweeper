@@ -17,9 +17,9 @@ public class MinesweeperLogic {
     /**
      * Opens cell if possible (cell exists).
      * @throws GameOverException if open is called after game has ended.
-     * @throws IndexOutOfBoundsException if x or y is out of bounds.
+     * @throws GameIndexOutOfBoundsException if x or y is out of bounds.
      */
-    public void open(int x, int y) throws GameOverException {
+    public void open(int x, int y) {
         Cell cell = this.getCell(x, y);
 
         if (cell.open()) {
@@ -37,9 +37,9 @@ public class MinesweeperLogic {
     /**
      * Toggles flag if possible (cell exists).
      * @throws GameOverException if flag is called after the game has ended.
-     * @throws IndexOutOfBoundsException if x or y is out of bounds.
+     * @throws GameIndexOutOfBoundsException if x or y is out of bounds.
      */
-    public void flag(int x, int y) throws GameOverException {
+    public void flag(int x, int y) {
         this.getCell(x, y).toggleFlag();
     }
 
@@ -48,14 +48,14 @@ public class MinesweeperLogic {
         this.win = win;
     }
 
-    private Cell getCell(int x, int y) throws GameOverException {
+    private Cell getCell(int x, int y) {
         if (gameOver) {
             throw new GameOverException();
         }
 
         Cell cell = this.grid.get(x, y);
         if (cell == null) {
-            throw new IndexOutOfBoundsException();
+            throw new GameIndexOutOfBoundsException();
         }
 
         return cell;
