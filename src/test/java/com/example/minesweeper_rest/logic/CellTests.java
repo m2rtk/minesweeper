@@ -49,16 +49,6 @@ public class CellTests {
     }
 
     @Test
-    public void getNearbyBombsIsOk() {
-        Cell cell = new Cell(false);
-        assertEquals(-1, cell.getNearbyBombs());
-        cell.incrementNearbyBombs();
-        assertEquals(-1, cell.getNearbyBombs());
-        assertFalse(cell.open());
-        assertEquals(1, cell.getNearbyBombs());
-    }
-
-    @Test
     public void isFlaggedIsOk() {
         Cell cell = new Cell(false);
         assertFalse(cell.isFlagged());

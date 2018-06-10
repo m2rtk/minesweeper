@@ -10,8 +10,8 @@ public class MinesweeperLogic {
     public MinesweeperLogic(Grid grid, long id) {
         this.grid = grid;
         this.id = id;
-        this.gameOver = false;
-        this.win = false;
+        gameOver = false;
+        win = false;
     }
 
     /**
@@ -19,19 +19,21 @@ public class MinesweeperLogic {
      * @throws GameOverException if open is called after game has ended.
      * @throws GameIndexOutOfBoundsException if x or y is out of bounds.
      */
-    public void open(int x, int y) {
-        Cell cell = this.getCell(x, y);
+    public GameState open(int x, int y) {
+        Cell cell = getCell(x, y);
 
         if (cell.open()) {
-            this.openAllBombs();
-            this.end(false);
+            openAllBombs();
+            end(false);
         } else {
-            this.propagate(x, y);
+            propagate(cell, x, y);
 
-            if (this.grid.getClosedCells().size() == this.grid.bombs) {
-                this.end(true);
+            if (grid.getClosedCells().size() == grid.bombs) {
+                end(true);
             }
         }
+
+        return getGameState();
     }
 
     /**
@@ -39,13 +41,14 @@ public class MinesweeperLogic {
      * @throws GameOverException if flag is called after the game has ended.
      * @throws GameIndexOutOfBoundsException if x or y is out of bounds.
      */
-    public void flag(int x, int y) {
-        this.getCell(x, y).toggleFlag();
+    public GameState flag(int x, int y) {
+        getCell(x, y).toggleFlag();
+        return getGameState();
     }
 
-    private void end(boolean win) {
-        this.gameOver = true;
-        this.win = win;
+    private void end(boolean isWin) {
+        gameOver = true;
+        win = isWin;
     }
 
     private Cell getCell(int x, int y) {
@@ -53,45 +56,29 @@ public class MinesweeperLogic {
             throw new GameOverException();
         }
 
-        Cell cell = this.grid.get(x, y);
-        if (cell == null) {
-            throw new GameIndexOutOfBoundsException();
-        }
-
-        return cell;
+        return grid.get(x, y).orElseThrow(GameIndexOutOfBoundsException::new);
     }
 
     private void openAllBombs() {
-        this.grid.getAll().stream().filter(Cell::hasBomb).forEach(Cell::open);
+        grid.getCellsWithBombs().forEach(Cell::open);
     }
 
-    private void propagate(int x, int y) {
-        this.grid.get(x, y).open();
-        this.propagateIfPossible(x + 1, y);
-        this.propagateIfPossible(x - 1, y);
-        this.propagateIfPossible(x, y + 1);
-        this.propagateIfPossible(x, y - 1);
+    private void propagate(Cell c, int x, int y) {
+        c.open();
+        propagateIfPossible(x + 1, y);
+        propagateIfPossible(x - 1, y);
+        propagateIfPossible(x, y + 1);
+        propagateIfPossible(x, y - 1);
     }
 
     private void propagateIfPossible(int x, int y) {
-        if (this.grid.get(x, y) != null && ! this.grid.get(x, y).isOpen() && ! this.grid.get(x, y).hasBomb()) {
-            this.propagate(x, y);
-        }
+        grid.get(x, y)
+                .filter(c -> ! c.isOpen())
+                .filter(c -> ! c.bomb)
+                .ifPresent(c -> propagate(c, x, y));
     }
 
-    public Grid getGrid() {
-        return grid;
-    }
-
-    public boolean isGameOver() {
-        return gameOver;
-    }
-
-    public boolean isWin() {
-        return win;
-    }
-
-    public long getId() {
-        return id;
+    public GameState getGameState() {
+        return new GameState(id, grid, gameOver, win);
     }
 }

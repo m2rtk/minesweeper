@@ -1,16 +1,23 @@
 package com.example.minesweeper_rest.logic;
 
-public class Cell {
+
+@SuppressWarnings("WeakerAccess")
+class Cell {
+    final boolean bomb;
+    private final int nearbyBombs;
+
     private boolean open;
-    private boolean bomb;
     private boolean flag;
-    private int nearbyBombs;
+
+    Cell(boolean bomb, int nearbyBombs) {
+        this.bomb = bomb;
+        this.nearbyBombs = nearbyBombs;
+        open = false;
+        flag = false;
+    }
 
     Cell(boolean bomb) {
-        this.bomb = bomb;
-        this.open = false;
-        this.flag = false;
-        this.nearbyBombs = 0;
+        this(bomb, -1);
     }
 
     /**
@@ -18,30 +25,24 @@ public class Cell {
      * @return true if cell contains bomb.
      */
     boolean open() {
-        if ( ! this.isOpen() ) {
-            this.open = true;
-            return this.hasBomb();
+        if ( ! open ) {
+            open = true;
+            return bomb;
         } else {
             return false;
         }
     }
 
-    public void toggleFlag() {
-        this.flag = !this.flag;
+    void toggleFlag() {
+        flag = !flag;
+    }
+
+    public boolean isBomb() {
+        return open && bomb;
     }
 
     public boolean isOpen() {
         return open;
-    }
-
-    // Not exposed to player
-    boolean hasBomb() {
-        return bomb;
-    }
-
-    // Exposed to player
-    public boolean isBomb() {
-        return open && bomb;
     }
 
     public boolean isFlagged() {
@@ -50,9 +51,5 @@ public class Cell {
 
     public int getNearbyBombs() {
         return open ? nearbyBombs : -1;
-    }
-
-    void incrementNearbyBombs() {
-        this.nearbyBombs++;
     }
 }

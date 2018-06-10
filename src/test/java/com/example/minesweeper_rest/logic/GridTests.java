@@ -3,6 +3,7 @@ package com.example.minesweeper_rest.logic;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static junit.framework.TestCase.*;
@@ -68,14 +69,14 @@ public class GridTests {
         cells[1][1] = new Cell(true);
         Grid grid = new Grid(cells);
 
-        assertEquals(grid.get(0, 0), cells[0][0]);
-        assertEquals(grid.get(0, 1), cells[1][0]);
-        assertEquals(grid.get(1, 0), cells[0][1]);
-        assertEquals(grid.get(1, 1), cells[1][1]);
+        assertEquals(grid.get(0, 0).get(), cells[0][0]);
+        assertEquals(grid.get(0, 1).get(), cells[1][0]);
+        assertEquals(grid.get(1, 0).get(), cells[0][1]);
+        assertEquals(grid.get(1, 1).get(), cells[1][1]);
 
-        assertNull(grid.get(-1, -1));
-        assertNull(grid.get(2, 1));
-        assertNull(grid.get(2, 2));
-        assertNull(grid.get(-1, 1));
+        assertEquals(Optional.empty(), grid.get(-1, -1));
+        assertEquals(Optional.empty(), grid.get(2, 1));
+        assertEquals(Optional.empty(), grid.get(2, 2));
+        assertEquals(Optional.empty(), grid.get(-1, 1));
     }
 }
