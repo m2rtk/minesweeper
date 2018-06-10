@@ -1,8 +1,7 @@
-package com.example.minesweeper_rest.logic;
+package eu.m2rt.minesweeper.logic;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import java.util.*;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,13 +35,11 @@ public class Grid {
                 .flatMap(Stream::of);
     }
 
-    @JsonIgnore
     Set<Cell> getAll() {
         return allCells()
                 .collect(Collectors.toSet());
     }
 
-    @JsonIgnore
     Set<Cell> getClosedCells() {
         return allCells()
                 .filter(c -> ! c.isOpen())

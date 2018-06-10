@@ -1,21 +1,15 @@
-package com.example.minesweeper_rest.logic;
+package eu.m2rt.minesweeper.logic;
 
-// TODO 100% immutable
+// TODO 100% immutable, atm grid is mutable
 public class GameState {
-    private final Long id;
     private final Grid grid;
     private final boolean gameOver;
     private final boolean isWin;
 
-    GameState(Long id, Grid grid, boolean gameOver, boolean isWin) {
-        this.id = id;
+    public GameState(Grid grid, boolean gameOver, boolean isWin) {
         this.grid = grid;
         this.gameOver = gameOver;
         this.isWin = isWin;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public Grid getGrid() {

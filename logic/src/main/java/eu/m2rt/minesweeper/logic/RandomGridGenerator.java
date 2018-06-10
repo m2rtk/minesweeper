@@ -1,4 +1,4 @@
-package com.example.minesweeper_rest.logic;
+package eu.m2rt.minesweeper.logic;
 
 import java.util.List;
 import java.util.Random;
@@ -58,8 +58,16 @@ public class RandomGridGenerator extends GridGenerator {
         private final int col;
 
         private Point(int index) {
-            this.col = (index - index % width) / width;
-            this.row = index % width;
+            this.col = index % width;
+            this.row = (index - index % width) / width;
+        }
+
+        @Override
+        public String toString() {
+            return "Point{" +
+                    "row=" + row +
+                    ", col=" + col +
+                    '}';
         }
     }
 }

@@ -1,17 +1,10 @@
-package com.example.minesweeper_rest.logic;
+package eu.m2rt.minesweeper.logic;
 
-public class MinesweeperLogic {
-    private final Grid grid;
-    private final long id;
+public class Minesweeper {
+    private GameState state;
 
-    private boolean gameOver;
-    private boolean win;
-
-    public MinesweeperLogic(Grid grid, long id) {
-        this.grid = grid;
-        this.id = id;
-        gameOver = false;
-        win = false;
+    public Minesweeper(Grid grid) {
+        state = new GameState(grid, false, false);
     }
 
     /**
@@ -28,12 +21,14 @@ public class MinesweeperLogic {
         } else {
             propagate(cell, x, y);
 
-            if (grid.getClosedCells().size() == grid.bombs) {
+            if (grid().getClosedCells().size() == grid().bombs) {
                 end(true);
+            } else {
+                // TODO: if immutable, create new GameState
             }
         }
 
-        return getGameState();
+        return state;
     }
 
     /**
@@ -43,24 +38,28 @@ public class MinesweeperLogic {
      */
     public GameState flag(int x, int y) {
         getCell(x, y).toggleFlag();
-        return getGameState();
+        return state;
+    }
+
+    // TODO: Immutability, make copy of grid
+    private Grid grid() {
+        return state.getGrid();
     }
 
     private void end(boolean isWin) {
-        gameOver = true;
-        win = isWin;
+        state = new GameState(grid(), true, isWin);
     }
 
     private Cell getCell(int x, int y) {
-        if (gameOver) {
+        if (state.isGameOver()) {
             throw new GameOverException();
         }
 
-        return grid.get(x, y).orElseThrow(GameIndexOutOfBoundsException::new);
+        return grid().get(x, y).orElseThrow(GameIndexOutOfBoundsException::new);
     }
 
     private void openAllBombs() {
-        grid.getCellsWithBombs().forEach(Cell::open);
+        grid().getCellsWithBombs().forEach(Cell::open);
     }
 
     private void propagate(Cell c, int x, int y) {
@@ -72,13 +71,13 @@ public class MinesweeperLogic {
     }
 
     private void propagateIfPossible(int x, int y) {
-        grid.get(x, y)
+        grid().get(x, y)
                 .filter(c -> ! c.isOpen())
                 .filter(c -> ! c.bomb)
                 .ifPresent(c -> propagate(c, x, y));
     }
 
     public GameState getGameState() {
-        return new GameState(id, grid, gameOver, win);
+        return state;
     }
 }

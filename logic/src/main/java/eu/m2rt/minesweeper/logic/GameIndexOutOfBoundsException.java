@@ -1,4 +1,4 @@
-package com.example.minesweeper_rest.logic;
+package eu.m2rt.minesweeper.logic;
 
 public class GameIndexOutOfBoundsException extends IndexOutOfBoundsException {
 

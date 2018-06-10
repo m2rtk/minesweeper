@@ -1,7 +1,7 @@
-package com.example.minesweeper_rest.logic;
+package eu.m2rt.minesweeper.logic;
 
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 class Cell {
     final boolean bomb;
     private final int nearbyBombs;

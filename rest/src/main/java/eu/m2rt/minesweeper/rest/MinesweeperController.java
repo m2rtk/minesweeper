@@ -1,6 +1,6 @@
-package com.example.minesweeper_rest;
+package eu.m2rt.minesweeper.rest;
 
-import com.example.minesweeper_rest.logic.*;
+import eu.m2rt.minesweeper.logic.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,11 +10,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+@SuppressWarnings("unused")
 @RestController
 public class MinesweeperController {
 
     private final AtomicLong counter = new AtomicLong();
-    private final Map<Long, MinesweeperLogic> games = new ConcurrentHashMap<>();
+    private final Map<Long, Minesweeper> games = new ConcurrentHashMap<>();
 
     @RequestMapping(value = "/newgame", method = RequestMethod.POST)
     GameState newgame(
@@ -23,12 +24,11 @@ public class MinesweeperController {
             @RequestParam(value = "bombs", defaultValue = "17") int bombs
     ) {
         long id = counter.incrementAndGet();
-        MinesweeperLogic ms = new MinesweeperLogic(
-                new RandomGridGenerator(height, width, bombs).generate(),
-                id
+        Minesweeper ms = new Minesweeper(
+                new RandomGridGenerator(height, width, bombs).generate()
         );
         games.put(id, ms);
-        return ms.getGameState();
+        return new GameStateWithId(ms.getGameState(), id);
     }
 
     @RequestMapping(value = "/open", method = RequestMethod.POST)
