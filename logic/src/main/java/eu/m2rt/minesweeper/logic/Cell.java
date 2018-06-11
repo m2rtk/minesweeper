@@ -2,7 +2,7 @@ package eu.m2rt.minesweeper.logic;
 
 
 @SuppressWarnings({"WeakerAccess", "unused"})
-class Cell {
+public class Cell {
     final boolean bomb;
     private final int nearbyBombs;
 
@@ -16,25 +16,18 @@ class Cell {
         flag = false;
     }
 
-    Cell(boolean bomb) {
-        this(bomb, -1);
+    Cell open() {
+        open = true;
+        return this;
     }
 
-    /**
-     * Opens cell.
-     * @return true if cell contains bomb.
-     */
-    boolean open() {
-        if ( ! open ) {
-            open = true;
-            return bomb;
-        } else {
-            return false;
-        }
-    }
-
-    void toggleFlag() {
+    Cell toggleFlag() {
         flag = !flag;
+        return this;
+    }
+
+    boolean isClosed() {
+        return ! open;
     }
 
     public boolean isBomb() {

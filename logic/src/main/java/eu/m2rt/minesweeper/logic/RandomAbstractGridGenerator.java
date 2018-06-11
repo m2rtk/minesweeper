@@ -7,30 +7,26 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @SuppressWarnings("WeakerAccess")
-public class RandomGridGenerator extends GridGenerator {
+public class RandomAbstractGridGenerator extends AbstractGridGenerator {
     private final Random random;
-    private final boolean[][] bombLocations;
 
-    public RandomGridGenerator(int height, int width, int noOfBombs, Random random) {
+    public RandomAbstractGridGenerator(int height, int width, int noOfBombs, Random random) {
         super(height, width, noOfBombs);
         this.random = random;
-        this.bombLocations = new boolean[height][width];
     }
 
-    public RandomGridGenerator(int height, int width, int noOfBombs) {
+    public RandomAbstractGridGenerator(int height, int width, int noOfBombs) {
         this(height, width, noOfBombs, new Random());
     }
 
     @Override
-    boolean[][] generateBombs() {
+    protected void generateBombs() {
         IntStream
                 .generate(new RandomExclusiveIntSupplier(width * height))
                 .limit(bombs)
                 .boxed()
                 .map(Point::new)
                 .forEach(this::setCoordinateToTrue);
-
-        return bombLocations;
     }
 
     private void setCoordinateToTrue(Point p) {
