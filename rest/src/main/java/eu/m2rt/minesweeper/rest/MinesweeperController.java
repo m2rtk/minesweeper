@@ -29,7 +29,7 @@ public class MinesweeperController {
     ) {
         long id = counter.getAndIncrement();
         Minesweeper ms = new MinesweeperImpl(
-                new RandomAbstractGridGenerator(height, width, bombs).generate()
+                new RandomGridGenerator(height, width, bombs).generate()
         );
         games.put(id, ms);
         return new NewGameWrapper(ms.getState(), id);

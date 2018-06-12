@@ -28,7 +28,7 @@ public abstract class AbstractGridGenerator implements GridGenerator {
             }
         }
 
-        return new Grid(cells);
+        return new Grid(cells, height, width, bombs);
     }
 
     /**

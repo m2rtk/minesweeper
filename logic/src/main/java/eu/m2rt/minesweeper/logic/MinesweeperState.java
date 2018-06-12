@@ -1,27 +1,28 @@
 package eu.m2rt.minesweeper.logic;
 
-// TODO 100% immutable, atm grid is mutable
 @SuppressWarnings("WeakerAccess")
 public class MinesweeperState {
     private final Grid grid;
-    private final boolean gameOver;
-    private final boolean isWin;
+    private final State state;
 
-    public MinesweeperState(Grid grid, boolean gameOver, boolean isWin) {
-        this.grid = grid;
-        this.gameOver = gameOver;
-        this.isWin = isWin;
+    enum State {
+        WIN, LOSS, PLAY
+    }
+
+    public MinesweeperState(Grid grid, State state) {
+        this.grid = Grid.copy(grid);
+        this.state = state;
+    }
+
+    public MinesweeperState(Grid grid) {
+        this(grid, State.PLAY);
     }
 
     public Grid getGrid() {
         return grid;
     }
 
-    public boolean isGameOver() {
-        return gameOver;
-    }
-
-    public boolean isWin() {
-        return isWin;
+    public State getState() {
+        return state;
     }
 }

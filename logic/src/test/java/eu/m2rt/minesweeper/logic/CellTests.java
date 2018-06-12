@@ -2,10 +2,16 @@ package eu.m2rt.minesweeper.logic;
 
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class CellTests {
 
@@ -97,5 +103,39 @@ class CellTests {
     @Test
     void getNearbyBombsIsKnownIfOpenIfNoBomb() {
         assertEquals(0, new Cell(false, 0).open().getNearbyBombs());
+    }
+
+    @ParameterizedTest
+    @MethodSource("copyTestProvider")
+    void copyWorks(Cell cell) {
+        Cell copy = Cell.copy(cell);
+
+        assertNotSame(cell, copy);
+        assertEquals(cell.isOpen(),  copy.isOpen());
+        assertEquals(cell.hasBomb(), copy.hasBomb());
+        assertEquals(cell.isFlagged(), copy.isFlagged());
+        assertEquals(cell.getNearbyBombs(), cell.getNearbyBombs());
+
+        cell.open();
+        copy.open();
+
+        assertEquals(cell.getNearbyBombs(), copy.getNearbyBombs());
+        assertEquals(cell.isFlagged(), copy.isFlagged());
+    }
+
+    private static Stream<Cell> copyTestProvider() {
+        List<Cell> cells = new ArrayList<>();
+
+        for (boolean bomb : new boolean[]{ true, false }) {
+            for (int bombs : IntStream.range(-1, 9).toArray()) {
+                for (boolean open : new boolean[]{ true, false }) {
+                    for (boolean flag : new boolean[]{ true, false }) {
+                        cells.add(new Cell(bomb, bombs, open, flag));
+                    }
+                }
+            }
+        }
+
+        return cells.stream();
     }
 }

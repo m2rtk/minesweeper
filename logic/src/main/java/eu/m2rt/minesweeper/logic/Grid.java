@@ -10,12 +10,18 @@ public class Grid {
     private final Cell[][] cells;
     private final int height, width, bombs;
 
+    Grid(Cell[][] cells, int height, int width, int bombs) {
+        this.cells = cells;
+        this.height = height;
+        this.width = width;
+        this.bombs = bombs;
+    }
+
     Grid(Cell[][] cells) {
         this.cells = cells;
-
-        height = cells.length;
-        width  = height == 0 ? 0 : cells[0].length;
-        bombs  = getCellsWithBombs().size();
+        this.height = cells.length;
+        this.width = cells.length == 0 ? 0 : cells[0].length;
+        this.bombs = getCellsWithBombs().size();
     }
 
     /**
@@ -37,7 +43,7 @@ public class Grid {
 
     Set<Cell> getCellsWithBombs() {
         return allCells()
-                .filter(c -> c.bomb)
+                .filter(Cell::hasBomb)
                 .collect(Collectors.toSet());
     }
 
@@ -60,5 +66,18 @@ public class Grid {
 
     public int getBombs() {
         return bombs;
+    }
+
+    static Grid copy(Grid grid) {
+        Cell[][] cells = new Cell[grid.height][grid.width];
+
+
+        for (int row = 0; row < grid.height; row++) {
+            for (int col = 0; col < grid.width; col++) {
+                cells[row][col] = Cell.copy(grid.cells[row][col]);
+            }
+        }
+
+        return new Grid(cells, grid.height, grid.width, grid.bombs);
     }
 }

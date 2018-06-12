@@ -7,15 +7,15 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @SuppressWarnings("WeakerAccess")
-public class RandomAbstractGridGenerator extends AbstractGridGenerator {
+public class RandomGridGenerator extends AbstractGridGenerator {
     private final Random random;
 
-    public RandomAbstractGridGenerator(int height, int width, int noOfBombs, Random random) {
+    public RandomGridGenerator(int height, int width, int noOfBombs, Random random) {
         super(height, width, noOfBombs);
         this.random = random;
     }
 
-    public RandomAbstractGridGenerator(int height, int width, int noOfBombs) {
+    public RandomGridGenerator(int height, int width, int noOfBombs) {
         this(height, width, noOfBombs, new Random());
     }
 

@@ -1,10 +1,18 @@
 package eu.m2rt.minesweeper.logic;
 
+import static eu.m2rt.minesweeper.logic.MinesweeperState.State.LOSS;
+import static eu.m2rt.minesweeper.logic.MinesweeperState.State.PLAY;
+import static eu.m2rt.minesweeper.logic.MinesweeperState.State.WIN;
+
 public class MinesweeperImpl implements Minesweeper {
     private MinesweeperState state;
 
+    MinesweeperImpl(MinesweeperState state) {
+        this.state = state;
+    }
+
     public MinesweeperImpl(Grid grid) {
-        state = new MinesweeperState(grid, false, false);
+        this(new MinesweeperState(grid));
     }
 
     /**
@@ -14,17 +22,18 @@ public class MinesweeperImpl implements Minesweeper {
      */
     public Minesweeper open(int row, int col) {
         Cell cell = getCell(row, col);
+        Grid grid = state.getGrid();
 
         if (cell.open().isBomb()) {
             openAllBombs();
-            end(false);
+            state = new MinesweeperState(grid, LOSS);
         } else {
             propagate(cell, row, col);
 
-            if (grid().getClosedCells().size() == grid().getBombs()) {
-                end(true);
+            if (grid.getClosedCells().size() == grid.getBombs()) {
+                state = new MinesweeperState(grid, WIN);
             } else {
-                // TODO: if immutable, create new MinesweeperState
+                state = new MinesweeperState(grid);
             }
         }
 
@@ -45,25 +54,18 @@ public class MinesweeperImpl implements Minesweeper {
         return state;
     }
 
-    // TODO: Immutability, make copy of grid
-    private Grid grid() {
-        return state.getGrid();
-    }
-
-    private void end(boolean isWin) {
-        state = new MinesweeperState(grid(), true, isWin);
-    }
-
     private Cell getCell(int row, int col) {
-        if (state.isGameOver()) {
+        if (state.getState() != PLAY) {
             throw new GameOverException();
         }
 
-        return grid().get(row, col).orElseThrow(GameIndexOutOfBoundsException::new);
+        return state.getGrid()
+                .get(row, col)
+                .orElseThrow(GameIndexOutOfBoundsException::new);
     }
 
     private void openAllBombs() {
-        grid().getCellsWithBombs().forEach(Cell::open);
+        state.getGrid().getCellsWithBombs().forEach(Cell::open);
     }
 
     private void propagate(Cell cell, int row, int col) {
@@ -75,9 +77,9 @@ public class MinesweeperImpl implements Minesweeper {
     }
 
     private void propagateIfPossible(int row, int col) {
-        grid().get(row, col)
+        state.getGrid().get(row, col)
                 .filter(Cell::isClosed)
-                .filter(c -> ! c.bomb)
+                .filter(Cell::hasNoBomb)
                 .ifPresent(c -> propagate(c, row, col));
     }
 }
