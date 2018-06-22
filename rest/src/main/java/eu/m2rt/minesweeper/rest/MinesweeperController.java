@@ -1,6 +1,7 @@
 package eu.m2rt.minesweeper.rest;
 
 import eu.m2rt.minesweeper.logic.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ public class MinesweeperController {
     private final AtomicLong counter;
     private final ConcurrentMap<Long, Minesweeper> games;
 
+    @Autowired
     public MinesweeperController(ConcurrentMap<Long, Minesweeper> games, AtomicLong counter) {
         this.games = games;
         this.counter = counter;

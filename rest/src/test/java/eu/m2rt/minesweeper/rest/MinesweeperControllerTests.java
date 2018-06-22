@@ -26,10 +26,12 @@ class MinesweeperControllerTests {
 
     @Test
     void newGameIncrementsCounter() {
-        long old = counter.get();
-        controller.newgame(1, 1, 1);
-
-        assertEquals(old + 1, counter.get());
+        long old;
+        do {
+            old = counter.get();
+            controller.newgame(1, 1, 1);
+            assertEquals(old + 1, counter.get());
+        } while (old < 10);
     }
 
     @Test
@@ -77,6 +79,7 @@ class MinesweeperControllerTests {
         MinesweeperState state = controller.newgame(10, 10, 10).getGame();
         Minesweeper game = games.get(0L);
         assertSame(state.getGrid(), game.getState().getGrid()); // Can't compare states, because Controller uses wrapper of MinesweeperState
+        assertSame(state.getState(), game.getState().getState());
         return game;
     }
 }
