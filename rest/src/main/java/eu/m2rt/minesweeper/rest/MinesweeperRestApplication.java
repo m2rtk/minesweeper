@@ -1,6 +1,6 @@
 package eu.m2rt.minesweeper.rest;
 
-import eu.m2rt.minesweeper.logic.Minesweeper;
+import eu.m2rt.minesweeper.logic.interfaces.Minesweeper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;

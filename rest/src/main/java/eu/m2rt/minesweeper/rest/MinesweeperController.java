@@ -1,6 +1,9 @@
 package eu.m2rt.minesweeper.rest;
 
 import eu.m2rt.minesweeper.logic.*;
+import eu.m2rt.minesweeper.logic.exceptions.GameIndexOutOfBoundsException;
+import eu.m2rt.minesweeper.logic.exceptions.GameOverException;
+import eu.m2rt.minesweeper.logic.interfaces.Minesweeper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,6 @@
-package eu.m2rt.minesweeper.logic;
+package eu.m2rt.minesweeper.logic.interfaces;
+
+import eu.m2rt.minesweeper.logic.Grid;
 
 public interface GridGenerator {
 

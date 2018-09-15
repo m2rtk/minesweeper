@@ -1,5 +1,8 @@
 package eu.m2rt.minesweeper.logic;
 
+import eu.m2rt.minesweeper.logic.exceptions.GameIndexOutOfBoundsException;
+import eu.m2rt.minesweeper.logic.exceptions.GameOverException;
+import eu.m2rt.minesweeper.logic.interfaces.Minesweeper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

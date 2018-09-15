@@ -1,4 +1,8 @@
-package eu.m2rt.minesweeper.logic;
+package eu.m2rt.minesweeper.logic.interfaces;
+
+import eu.m2rt.minesweeper.logic.MinesweeperState;
+import eu.m2rt.minesweeper.logic.exceptions.GameIndexOutOfBoundsException;
+import eu.m2rt.minesweeper.logic.exceptions.GameOverException;
 
 public interface Minesweeper {
 
@@ -20,7 +24,7 @@ public interface Minesweeper {
 
     /**
      * Gets the current game state.
-     * @return current MinesweeperState object.
+     * @return MinesweeperState object corresponding to the current game state.
      */
     MinesweeperState getState();
 }

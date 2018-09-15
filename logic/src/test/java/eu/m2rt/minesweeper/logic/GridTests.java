@@ -24,13 +24,6 @@ class GridTests {
         assertEquals(10, grid.getWidth());
     }
 
-    @Test
-    void constructorSetsCorrectAmountOfBombs() {
-        grid = newGrid(5, 5, 10);
-
-        assertEquals(10, grid.getBombs());
-    }
-
     @ParameterizedTest
     @CsvSource({
             "-1, 2", "0, 2", "1, 2", "2, 2",

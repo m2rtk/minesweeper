@@ -1,5 +1,9 @@
 package eu.m2rt.minesweeper.logic;
 
+import eu.m2rt.minesweeper.logic.exceptions.GameIndexOutOfBoundsException;
+import eu.m2rt.minesweeper.logic.exceptions.GameOverException;
+import eu.m2rt.minesweeper.logic.interfaces.Minesweeper;
+
 import static eu.m2rt.minesweeper.logic.MinesweeperState.State.LOSS;
 import static eu.m2rt.minesweeper.logic.MinesweeperState.State.PLAY;
 import static eu.m2rt.minesweeper.logic.MinesweeperState.State.WIN;
@@ -30,7 +34,7 @@ public class MinesweeperImpl implements Minesweeper {
         } else {
             propagate(cell, row, col);
 
-            if (grid.getClosedCells().size() == grid.getBombs()) {
+            if (grid.getClosedCells().size() == grid.getNoOfBombs()) {
                 state = new MinesweeperState(grid, WIN);
             } else {
                 state = new MinesweeperState(grid);
@@ -65,21 +69,29 @@ public class MinesweeperImpl implements Minesweeper {
     }
 
     private void openAllBombs() {
-        state.getGrid().getCellsWithBombs().forEach(Cell::open);
+        state.getGrid()
+                .getCellsWithBombs()
+                .forEach(Cell::open);
     }
 
     private void propagate(Cell cell, int row, int col) {
-        cell.open();
-        propagateIfPossible(row, col + 1);
-        propagateIfPossible(row, col - 1);
-        propagateIfPossible(row + 1, col);
-        propagateIfPossible(row - 1, col);
-    }
+        if (cell.isClosed()) {
+            cell.open();
+        }
 
-    private void propagateIfPossible(int row, int col) {
-        state.getGrid().get(row, col)
-                .filter(Cell::isClosed)
-                .filter(Cell::hasNoBomb)
-                .ifPresent(c -> propagate(c, row, col));
+        if (cell.getNearbyBombs() > 0) {
+            return;
+        }
+
+        for (int y = -1; y <= 1; y++) {
+            for (int x = -1; x <= 1; x++) {
+                final int newRow = row + y;
+                final int newCol = col + x;
+
+                state.getGrid().get(newRow, newCol)
+                        .filter(Cell::isClosed)
+                        .ifPresent(c -> propagate(c, newRow, newCol));
+            }
+        }
     }
 }

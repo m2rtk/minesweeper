@@ -108,7 +108,7 @@ class CellTests {
     @ParameterizedTest
     @MethodSource("copyTestProvider")
     void copyWorks(Cell cell) {
-        Cell copy = Cell.copy(cell);
+        Cell copy = new Cell(cell);
 
         assertNotSame(cell, copy);
         assertEquals(cell.isOpen(),  copy.isOpen());

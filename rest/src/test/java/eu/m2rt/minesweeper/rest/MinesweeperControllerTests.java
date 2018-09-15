@@ -1,6 +1,6 @@
 package eu.m2rt.minesweeper.rest;
 
-import eu.m2rt.minesweeper.logic.Minesweeper;
+import eu.m2rt.minesweeper.logic.interfaces.Minesweeper;
 import eu.m2rt.minesweeper.logic.MinesweeperState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
