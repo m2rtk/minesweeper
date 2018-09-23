@@ -22,6 +22,7 @@ class MinesweeperImplTests {
     @BeforeEach
     void setUp() {
         grid = mock(Grid.class);
+        when(grid.copy()).thenReturn(grid);
         state = new MinesweeperState(grid);
         game = new MinesweeperImpl(state);
     }

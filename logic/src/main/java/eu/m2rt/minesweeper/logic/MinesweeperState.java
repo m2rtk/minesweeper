@@ -7,7 +7,7 @@ public class MinesweeperState {
     private final Grid grid;
     private final State state;
 
-    enum State {
+    public enum State {
         WIN, LOSS, PLAY
     }
 

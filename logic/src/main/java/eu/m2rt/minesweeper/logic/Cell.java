@@ -1,11 +1,5 @@
 package eu.m2rt.minesweeper.logic;
 
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Objects;
-
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Cell {
     private final boolean bomb;
@@ -86,22 +80,6 @@ public class Cell {
         public Cell build() {
             return new Cell(bomb, nearbyBombs);
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Cell cell = (Cell) o;
-        return bomb == cell.bomb &&
-                nearbyBombs == cell.nearbyBombs &&
-                open == cell.open &&
-                flag == cell.flag;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(bomb, nearbyBombs, open, flag);
     }
 
     @Override
