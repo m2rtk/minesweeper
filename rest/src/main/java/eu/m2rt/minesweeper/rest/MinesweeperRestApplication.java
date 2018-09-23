@@ -17,12 +17,7 @@ public class MinesweeperRestApplication {
 	}
 
 	@Bean
-	public ConcurrentMap<Long, Minesweeper> games() {
+	public ConcurrentMap<String, Minesweeper> games() {
 		return new ConcurrentHashMap<>();
-	}
-
-	@Bean
-	public AtomicLong counter() {
-		return new AtomicLong();
 	}
 }

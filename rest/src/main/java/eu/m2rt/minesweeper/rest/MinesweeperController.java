@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -17,13 +18,11 @@ import java.util.concurrent.atomic.AtomicLong;
 @RestController
 public class MinesweeperController {
 
-    private final AtomicLong counter;
-    private final ConcurrentMap<Long, Minesweeper> games;
+    private final ConcurrentMap<String, Minesweeper> games;
 
     @Autowired
-    public MinesweeperController(ConcurrentMap<Long, Minesweeper> games, AtomicLong counter) {
+    public MinesweeperController(ConcurrentMap<String, Minesweeper> games) {
         this.games = games;
-        this.counter = counter;
     }
 
     @RequestMapping(value = "/newgame", method = RequestMethod.POST)
@@ -32,7 +31,7 @@ public class MinesweeperController {
             @RequestParam(value = "width", defaultValue = "10") int width,
             @RequestParam(value = "bombs", defaultValue = "17") int bombs
     ) {
-        long id = counter.getAndIncrement();
+        String id = UUID.randomUUID().toString();
         Minesweeper ms = new MinesweeperImpl(
                 new RandomGridGenerator(height, width, bombs).generate()
         );
@@ -42,7 +41,7 @@ public class MinesweeperController {
 
     @RequestMapping(value = "/open", method = RequestMethod.POST)
     MinesweeperState open (
-            @RequestParam(value = "id") long id,
+            @RequestParam(value = "id") String id,
             @RequestParam(value = "row") int row,
             @RequestParam(value = "col") int col
     ) {
@@ -51,7 +50,7 @@ public class MinesweeperController {
 
     @RequestMapping(value = "/flag", method = RequestMethod.POST)
     MinesweeperState flag (
-            @RequestParam(value = "id") long id,
+            @RequestParam(value = "id") String id,
             @RequestParam(value = "row") int row,
             @RequestParam(value = "col") int col
     ) {
@@ -60,7 +59,7 @@ public class MinesweeperController {
 
     @RequestMapping(value = "/game", method = RequestMethod.GET)
     MinesweeperState game(
-            @RequestParam(value = "id") long id
+            @RequestParam(value = "id") String id
     ) {
         return games.get(id).getState();
     }
