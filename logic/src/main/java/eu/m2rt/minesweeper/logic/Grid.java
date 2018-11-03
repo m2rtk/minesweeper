@@ -100,8 +100,12 @@ public class Grid {
         }
 
         public Builder addBomb(Point p) {
-            builderCells[p.row][p.col].bomb();
-            incrementSurroundingCellsBombCount(p.row, p.col);
+            return addBomb(p.row, p.col);
+        }
+
+        public Builder addBomb(int row, int col) {
+            builderCells[row][col].bomb();
+            incrementSurroundingCellsBombCount(row, col);
             return this;
         }
 

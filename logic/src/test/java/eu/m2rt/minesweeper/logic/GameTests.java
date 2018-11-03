@@ -8,11 +8,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GameTests {
 
@@ -29,16 +31,11 @@ class GameTests {
     }
 
     private class TestCase {
-
-        private static final int FLAGGED = 10;
-        private static final int CLOSED = -1;
-
         private final Iterator<String> lines;
+        private String line;
 
         private int height, width;
         private Minesweeper ms;
-
-        private int[][] visibleState;
 
         private TestCase(Path testFile) {
             try {
@@ -52,19 +49,49 @@ class GameTests {
             readDimensions();
             constructGame();
 
-            String line;
+            while (lines.hasNext()) {
+                nextLine();
 
-            while (true) {
-                line = lines.next();
-                if ( ! "-".equals(line)) {
-                    assertEquals(MinesweeperState.State.valueOf(line), ms.getState().getState());
+                if (isGameOver()) {
+                    assertEquals(getExpectedGameEndState(), ms.getState().getState());
                     return;
                 }
 
-                readAndExecuteCommand(lines.next());
-                readState();
-                verifyState();
+                readCommands().forEach(this::execute);
+                readVisibleCellsFromGrid().forEach(this::assertVisibleCellMatchesActualCell);
             }
+        }
+
+        private List<Command> readCommands() {
+            List<Command> commands = new ArrayList<>();
+            while ( ! "-".equals(line) ) {
+                commands.add(Command.read(line));
+                line = lines.next();
+            }
+            return commands;
+        }
+
+        private void execute(Command c) {
+            c.executeOn(ms);
+        }
+
+        private void assertVisibleCellMatchesActualCell(VisibleCell cell) {
+            cell.assertMatchesActualCell(ms.getState().getGrid().getCells()[cell.row][cell.col]);
+        }
+
+        private void nextLine() {
+            line = lines.next();
+            if ("-".equals(line)) { nextLine(); }
+        }
+
+        private boolean isGameOver() {
+            return Arrays.stream(MinesweeperState.State.values())
+                    .map(Enum::toString)
+                    .anyMatch(s -> s.equals(line));
+        }
+
+        private MinesweeperState.State getExpectedGameEndState() {
+            return MinesweeperState.State.valueOf(line);
         }
 
         private void readDimensions() {
@@ -75,101 +102,26 @@ class GameTests {
 
         private void constructGame() {
             Grid.Builder gb = new Grid.Builder(height, width);
-            String line;
 
-            for (int row = 0; row < height; row++) {
-                line = lines.next();
-                for (int col = 0; col < width; col++) {
-                    if (line.charAt(col) == 'x') {
-                        gb.addBomb(new Point(row, col));
-                    }
-                }
-            }
+            readVisibleCellsFromGrid()
+                    .stream()
+                    .filter(VisibleCell.Bomb.class::isInstance)
+                    .forEach(bomb -> gb.addBomb(bomb.row, bomb.col));
 
             ms = new MinesweeperImpl(gb.build());
         }
 
-        private void readAndExecuteCommand(String line) {
-            String[] p = line.split(",");
-
-            char c  = p[0].charAt(0);
-            int row = Integer.parseInt(p[1]);
-            int col = Integer.parseInt(p[2]);
-
-            switch (c) {
-                case 'o':
-                    System.out.println("Opening cell at " + row + "," + col);
-                    ms.open(row, col);
-                    break;
-                case 'f':
-                    System.out.println("Flagging cell at " + row + "," + col);
-                    ms.flag(row, col);
-                    break;
-            }
-
-            String l = lines.next();
-
-            if ( ! "-".equals(l)) {
-                readAndExecuteCommand(l);
-            }
-        }
-
-        private void verifyState() {
-            Cell[][] cells = ms.getState().getGrid().getCells();
-            Cell cell;
-            int visible;
-
-            for (int row = 0; row < height; row++) {
-                for (int col = 0; col < width; col++) {
-                    cell = cells[row][col];
-                    visible = visibleState[row][col];
-
-                    switch (visible) {
-                        case CLOSED:
-                            assertTrue(
-                                    cell.isClosed(),
-                                    "Cell at (" + row + ", " + col + ") should be closed. " + cell
-                            );
-                            break;
-                        case FLAGGED:
-                            assertTrue(
-                                    cell.isFlagged(),
-                                    "Cell at (" + row + ", " + col + ") should be flagged. " + cell
-                            );
-                            break;
-                        default:
-                            assertTrue(
-                                    cell.isOpen(),
-                                    "Cell at (" + row + ", " + col + ") should be open. " + cell
-                            );
-                            assertEquals(
-                                    visible,
-                                    cell.getNearbyBombs(),
-                                    "Cell at (" + row + ", " + col + ") should have " + visible + " nr instead of " + cell.getNearbyBombs() + "."
-                            );
-                    }
-                }
-            }
-        }
-
-        private void readState() {
-            visibleState = new int[height][width];
-            String line;
+        private List<VisibleCell> readVisibleCellsFromGrid() {
+            List<VisibleCell> cells = new ArrayList<>();
 
             for (int row = 0; row < height; row++) {
                 line = lines.next();
                 for (int col = 0; col < width; col++) {
-                    char c = line.charAt(col);
-
-                    if (Character.isDigit(c)) {
-                        visibleState[row][col] = Integer.parseInt(String.valueOf(c));
-                    } else if (c == 'F') {
-                        visibleState[row][col] = FLAGGED;
-                    } else if (c == 'O') {
-                        visibleState[row][col] = CLOSED;
-                    }
+                    cells.add(VisibleCell.of(row, col, line.charAt(col)));
                 }
             }
+
+            return cells;
         }
     }
 }
