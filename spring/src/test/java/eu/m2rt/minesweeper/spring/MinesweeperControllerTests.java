@@ -1,4 +1,4 @@
-package eu.m2rt.minesweeper.rest;
+package eu.m2rt.minesweeper.spring;
 
 import eu.m2rt.minesweeper.logic.interfaces.Minesweeper;
 import eu.m2rt.minesweeper.logic.MinesweeperState;
@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.*;
 

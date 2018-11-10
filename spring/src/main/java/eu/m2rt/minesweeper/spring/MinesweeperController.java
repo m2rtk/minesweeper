@@ -1,4 +1,4 @@
-package eu.m2rt.minesweeper.rest;
+package eu.m2rt.minesweeper.spring;
 
 import eu.m2rt.minesweeper.logic.*;
 import eu.m2rt.minesweeper.logic.exceptions.GameIndexOutOfBoundsException;
@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @SuppressWarnings("unused")
+@CrossOrigin
 @RestController
 public class MinesweeperController {
 

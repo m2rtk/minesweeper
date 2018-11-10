@@ -1,4 +1,4 @@
-package eu.m2rt.minesweeper.rest;
+package eu.m2rt.minesweeper.spring;
 
 import eu.m2rt.minesweeper.logic.MinesweeperState;
 
