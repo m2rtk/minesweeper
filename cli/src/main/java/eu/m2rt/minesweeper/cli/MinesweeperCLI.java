@@ -8,14 +8,19 @@ import java.util.Scanner;
 
 import static org.fusesource.jansi.Ansi.Color.*;
 
-// TODO refactor
-// TODO prettier IO
 public class MinesweeperCLI {
 
+    private static Scanner scanner = new Scanner(System.in);
     private static Minesweeper ms;
 
     public static void main(String[] args) {
-        ms = new MinesweeperImpl(new RandomGridGenerator(6, 10, 10).generate());
+        ArgumentParser.Args clArgs = ArgumentParser.parse(args);
+        if (clArgs.hasHelp) {
+            clArgs.printHelp();
+            System.exit(0);
+        }
+
+        ms = new MinesweeperImpl(new RandomGridGenerator(clArgs.height, clArgs.width, clArgs.bombs).generate());
 
         while (ms.getState().getState() == MinesweeperState.State.PLAY) {
             printState(ms.getState());
@@ -43,21 +48,20 @@ public class MinesweeperCLI {
     }
 
     private static void parseInput() {
-        Scanner scanner = new Scanner(System.in);
+        try {
+            String[] line = scanner.nextLine().trim().split("[ ]+");
 
-        String[] line = scanner.nextLine().trim().split("[ ]+");
+            char c = line[0].charAt(0);
+            int row = Integer.parseInt(line[1]);
+            int col = Integer.parseInt(line[2]);
 
-        char c = line[0].charAt(0);
-        int row = Integer.parseInt(line[1]);
-        int col = Integer.parseInt(line[2]);
+            if      (c == 'o') ms.open(row, col);
+            else if (c == 'f') ms.flag(row, col);
+            else throw new RuntimeException();
 
-        switch (c) {
-            case 'o':
-                ms.open(row, col);
-                break;
-            case 'f':
-                ms.flag(row, col);
-                break;
+        } catch (RuntimeException e) {
+            System.out.println("Invalid input, example: 'o 1 2'");
+            parseInput();
         }
     }
 
