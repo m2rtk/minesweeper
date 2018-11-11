@@ -3,7 +3,7 @@ body {
     margin: 20px;
 }
 
-.game {
+#game {
     display: table;
     margin: auto auto;
 }
@@ -15,8 +15,8 @@ body {
 }
 
 .cell {
-    background: #fff;
-    border: 1px solid #999;
+    background: #f3f3f3;
+    border: 1px solid #777;
     float: left;
     font-size: 24px;
     font-weight: bold;
@@ -30,7 +30,21 @@ body {
     outline: none;
 }
 
+.open {
+    background: #fff;
+}
+
+button, input {
+    border: 1px solid #999;
+    margin-top: 24px;
+    height: 24px;
+    margin-right: 6px;
+}
+
+input {
+    width: 48px;
+}
+
 .cell:focus {
     outline: none;
-    background: #ddd;
 }

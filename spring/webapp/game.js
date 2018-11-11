@@ -17,7 +17,7 @@ function Cell(rowIndex, colIndex, state) {
                 event.preventDefault()
             },
             key: rowIndex + "-" + colIndex,
-            className: 'cell',
+            className: 'cell' + (state.open ? " open" : ""),
             style: {
                 color: get_cell_color(visible_state)
             }
@@ -32,7 +32,7 @@ function get_visible_state(state) {
             return 'X';
         }
         if (state.nearbyBombs === 0) {
-            return '-';
+            return '';
         }
         return state.nearbyBombs;
     }
@@ -79,7 +79,6 @@ function Board(rows) {
     );
 }
 
-
 function post(endpoint, data) {
     return axios({
         method: 'post',
@@ -96,36 +95,51 @@ function post_and_render(action, row, col) {
     });
 }
 
+function get_input(name) {
+    var val = document.querySelector("#" + name).valueAsNumber;
+
+    if (isNaN(val)) {
+        throw name + " input is not a number.";
+    }
+
+    return val;
+}
+
 function new_game() {
-    return post('newgame', {height: 16, width: 16, bombs: 40}).then(response => {
+    try {
+        var params = {
+            height: get_input('height'),
+            width: get_input('width'),
+            bombs: get_input('bombs')
+        };
+    } catch(err) {
+        console.log(err);
+        return;
+    }
+
+    post('newgame', params).then(response => {
         GAME_ID = response.data.id;
         handle_game_state(response.data.game);
     });
 }
 
 function handle_game_state(game) {
-    render_grid(game.grid);
-    render_state(game.state);
+    render_board(game.grid);
 }
 
-function render_grid(grid) {
+function render_board(grid) {
     ReactDOM.render(
         Board(grid.cells),
-        document.querySelector('.board')
+        document.querySelector('#board')
     );
 }
 
-function render_state(state) {
-    ReactDOM.render(
-        React.createElement(
-            'h3',
-            null,
-            state
-        ),
-        document.querySelector('.state')
-    )
+var DEFAULTS = {
+    height: 16, 
+    width: 16, 
+    bombs: 40
 }
 
 var API = 'minesweeper/api/';
+var API = 'http://localhost:8080/';
 var GAME_ID = null;
-new_game();
