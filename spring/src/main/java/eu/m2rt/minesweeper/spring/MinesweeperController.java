@@ -1,6 +1,8 @@
 package eu.m2rt.minesweeper.spring;
 
-import eu.m2rt.minesweeper.logic.*;
+import eu.m2rt.minesweeper.logic.MinesweeperImpl;
+import eu.m2rt.minesweeper.logic.MinesweeperState;
+import eu.m2rt.minesweeper.logic.RandomGridGenerator;
 import eu.m2rt.minesweeper.logic.exceptions.GameIndexOutOfBoundsException;
 import eu.m2rt.minesweeper.logic.exceptions.GameOverException;
 import eu.m2rt.minesweeper.logic.interfaces.Minesweeper;
@@ -12,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 @SuppressWarnings("unused")
 @CrossOrigin
@@ -56,6 +57,15 @@ public class MinesweeperController {
             @RequestParam(value = "col") int col
     ) {
         return games.get(id).flag(row, col).getState();
+    }
+
+    @RequestMapping(value = "/chord", method = RequestMethod.POST)
+    MinesweeperState chord (
+            @RequestParam(value = "id") String id,
+            @RequestParam(value = "row") int row,
+            @RequestParam(value = "col") int col
+    ) {
+        return games.get(id).chord(row, col).getState();
     }
 
     @RequestMapping(value = "/game", method = RequestMethod.GET)

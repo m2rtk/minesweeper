@@ -23,6 +23,14 @@ public interface Minesweeper {
     Minesweeper flag(int row, int col);
 
     /**
+     * Chords cell if cell is open. Otherwise does nothing.
+     * @throws GameOverException if chord is called after the game has ended.
+     * @throws GameIndexOutOfBoundsException if row or col is out of bounds.
+     * @return this object.
+     */
+    Minesweeper chord(int row, int col);
+
+    /**
      * Gets the current game state.
      * @return MinesweeperState object corresponding to the current game state.
      */

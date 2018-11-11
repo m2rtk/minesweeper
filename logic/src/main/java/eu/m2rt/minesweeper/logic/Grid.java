@@ -16,26 +16,30 @@ public class Grid {
         this.bombs = bombs;
     }
 
-    public Grid(Cell[][] cells) {
+    private Grid(Cell[][] cells) {
         this.cells = cells;
         this.height = cells.length;
         this.width = cells.length == 0 ? 0 : cells[0].length;
         this.bombs = getCellsWithBombs().size();
 
         if (height == 0 || width == 0) {
-            throw new IllegalArgumentException("Cells must not be 0 sized.");
+            throw new IllegalArgumentException("Grid can not be empty.");
         }
     }
 
     /**
      * @return Cell object in grid at coordinates x, y. Returns empty if out of bounds.
      */
-    public Optional<Cell> get(int row, int col) {
+    public Optional<Cell> getCell(int row, int col) {
         if ( col < width && col >= 0 && row < height && row >= 0 ) {
             return Optional.of(cells[row][col]);
         } else {
             return Optional.empty();
         }
+    }
+
+    Optional<Cell> getCell(Point p) {
+        return getCell(p.row, p.col);
     }
 
     Set<Cell> getClosedCells() {
@@ -47,6 +51,14 @@ public class Grid {
     Set<Cell> getCellsWithBombs() {
         return allCells()
                 .filter(Cell::hasBomb)
+                .collect(Collectors.toSet());
+    }
+
+    Set<Cell> getSurroundingCells(Cell cell) {
+        return cell.location.surroundingPoints()
+                .stream()
+                .map(this::getCell)
+                .flatMap(Optional::stream)
                 .collect(Collectors.toSet());
     }
 
@@ -88,25 +100,30 @@ public class Grid {
     }
 
     public static class Builder {
+        private final int height, width;
         private final Cell.Builder[][] builderCells;
 
         public Builder(int height, int width) {
+            this.height = height;
+            this.width = width;
             builderCells = new Cell.Builder[height][width];
+
             for (int row = 0; row < height; row++) {
                 for (int col = 0; col < width; col++) {
-                    builderCells[row][col] = new Cell.Builder();
+                    builderCells[row][col] = new Cell.Builder(Point.of(row, col));
                 }
             }
         }
 
-        public Builder addBomb(Point p) {
-            return addBomb(p.row, p.col);
+        @SuppressWarnings("UnusedReturnValue")
+        public Builder addBomb(Point location) {
+            getCell(location).ifPresent(Cell.Builder::markAsBomb);
+            getSurroundingCells(location).forEach(Cell.Builder::incrementNearbyBombs);
+            return this;
         }
 
         public Builder addBomb(int row, int col) {
-            builderCells[row][col].bomb();
-            incrementSurroundingCellsBombCount(row, col);
-            return this;
+            return addBomb(Point.of(row, col));
         }
 
         public Builder addBombs(Collection<Point> bombs) {
@@ -115,10 +132,10 @@ public class Grid {
         }
 
         public Grid build() {
-            Cell[][] cells = new Cell[builderCells.length][builderCells[0].length];
+            Cell[][] cells = new Cell[height][width];
 
-            for (int row = 0; row < cells.length; row++) {
-                for (int col = 0; col < cells[0].length; col++) {
+            for (int row = 0; row < height; row++) {
+                for (int col = 0; col < width; col++) {
                     cells[row][col] = builderCells[row][col].build();
                 }
             }
@@ -126,18 +143,27 @@ public class Grid {
             return new Grid(cells);
         }
 
-        private void incrementSurroundingCellsBombCount(int row, int col) {
-            for (int i = -1; i < 2; i++) {
-                for (int j = -1; j < 2; j++) {
-                    if (inBounds(row + i, col + j)) {
-                        builderCells[row + i][col + j].incrementNearbyBombs();
-                    }
-                }
+        private Optional<Cell.Builder> getCell(Point p) {
+            if (inBounds(p)) {
+                return Optional.of(builderCells[p.row][p.col]);
+            } else {
+                return Optional.empty();
             }
         }
 
+        private Set<Cell.Builder> getSurroundingCells(Point location) {
+            return location.surroundingPoints().stream()
+                    .map(this::getCell)
+                    .flatMap(Optional::stream)
+                    .collect(Collectors.toSet());
+        }
+
+        private boolean inBounds(Point p) {
+            return inBounds(p.row, p.col);
+        }
+
         private boolean inBounds(int row, int col) {
-            return row >= 0 && col >= 0 && row < builderCells.length && col < builderCells[0].length;
+            return row >= 0 && col >= 0 && row < height && col < width;
         }
     }
 

@@ -106,7 +106,7 @@ class GameTests {
             readVisibleCellsFromGrid()
                     .stream()
                     .filter(VisibleCell.Bomb.class::isInstance)
-                    .forEach(bomb -> gb.addBomb(bomb.row, bomb.col));
+                    .forEach(bomb -> gb.addBomb(bomb.location));
 
             ms = new MinesweeperImpl(gb.build());
         }

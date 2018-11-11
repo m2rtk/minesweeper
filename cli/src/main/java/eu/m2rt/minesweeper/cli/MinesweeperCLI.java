@@ -37,7 +37,7 @@ public class MinesweeperCLI {
         C c;
         for (int row = 0; row < grid.getHeight(); row++) {
             for (int col = 0; col < grid.getWidth(); col++) {
-                cell = grid.get(row, col).orElseThrow(IllegalStateException::new);
+                cell = grid.getCell(row, col).orElseThrow(IllegalStateException::new);
                 c = C.from(cell);
 
                 System.out.print(Ansi.ansi().bg(c.bg).fg(c.fg).a(c.c).reset());

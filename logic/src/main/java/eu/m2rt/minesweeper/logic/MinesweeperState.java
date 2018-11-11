@@ -20,6 +20,14 @@ public class MinesweeperState {
         this(grid, State.PLAY);
     }
 
+    MinesweeperState newState() {
+        return new MinesweeperState(grid, state);
+    }
+
+    MinesweeperState newState(State state) {
+        return new MinesweeperState(grid, state);
+    }
+
     public Grid getGrid() {
         return grid;
     }

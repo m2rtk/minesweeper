@@ -4,26 +4,39 @@ package eu.m2rt.minesweeper.logic;
 public class Cell {
     private final boolean bomb;
     private final int nearbyBombs;
+    final Point location;
 
     private boolean open;
     private boolean flag;
 
-    Cell(boolean bomb, int nearbyBombs, boolean open, boolean flag) {
+    Cell(Point location, boolean bomb, int nearbyBombs, boolean open, boolean flag) {
+        this.location = location;
         this.bomb = bomb;
         this.nearbyBombs = nearbyBombs;
         this.open = open;
         this.flag = flag;
     }
 
-    Cell(boolean bomb, int nearbyBombs) {
-        this(bomb, nearbyBombs, false, false);
+    Cell(Point location, boolean bomb, int nearbyBombs) {
+        this(location, bomb, nearbyBombs, false, false);
     }
 
     Cell(Cell that) {
+        this.location = that.location;
         this.bomb = that.bomb;
         this.nearbyBombs = that.nearbyBombs;
         this.open = that.open;
         this.flag = that.flag;
+    }
+
+    // for testing
+    Cell(boolean bomb, int nearbyBombs) {
+        this(Point.of(0, 0), bomb, nearbyBombs);
+    }
+
+    // for testing
+    Cell(boolean bomb, int nearbyBombs, boolean open, boolean flag) {
+        this(Point.of(0, 0), bomb, nearbyBombs, open, flag);
     }
 
     Cell open() {
@@ -49,6 +62,28 @@ public class Cell {
         return ! bomb;
     }
 
+    static class Builder {
+        private final Point location;
+        private int nearbyBombs = 0;
+        private boolean bomb = false;
+
+        Builder(Point location) {
+            this.location = location;
+        }
+
+        void incrementNearbyBombs() {
+            nearbyBombs++;
+        }
+
+        void markAsBomb() {
+            bomb = true;
+        }
+
+        Cell build() {
+            return new Cell(location, bomb, nearbyBombs);
+        }
+    }
+
     public boolean isBomb() {
         return open && bomb;
     }
@@ -65,28 +100,12 @@ public class Cell {
         return open ? nearbyBombs : -1;
     }
 
-    public static class Builder {
-        private int nearbyBombs = 0;
-        private boolean bomb = false;
-
-        public void incrementNearbyBombs() {
-            nearbyBombs++;
-        }
-
-        public void bomb() {
-            bomb = true;
-        }
-
-        public Cell build() {
-            return new Cell(bomb, nearbyBombs);
-        }
-    }
-
     @Override
     public String toString() {
         return "Cell{" +
                 "bomb=" + bomb +
                 ", nearbyBombs=" + nearbyBombs +
+                ", location=" + location +
                 ", open=" + open +
                 ", flag=" + flag +
                 '}';

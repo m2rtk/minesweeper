@@ -68,6 +68,6 @@ class MinesweeperImplTests {
     }
 
     private void setGetCell(int row, int col, Cell cell) {
-        when(grid.get(eq(row), eq(col))).thenReturn(Optional.ofNullable(cell));
+        when(grid.getCell(eq(row), eq(col))).thenReturn(Optional.ofNullable(cell));
     }
 }

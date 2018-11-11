@@ -21,6 +21,8 @@ abstract class Command {
                 return new Open(row, col);
             case 'f':
                 return new Flag(row, col);
+            case 'c':
+                return new Chord(row, col);
             default:
                 throw new RuntimeException("Unknown command " + c);
         }
@@ -45,5 +47,10 @@ abstract class Command {
     private static class Flag extends Command {
         private Flag(int row, int col) { super(row, col); }
         @Override void executeOn(Minesweeper ms) { ms.flag(row, col); }
+    }
+
+    private static class Chord extends Command {
+        private Chord(int row, int col) { super(row, col); }
+        @Override void executeOn(Minesweeper ms) { ms.chord(row, col); }
     }
 }

@@ -12,14 +12,14 @@ class GridTests {
 
     @Test
     void constructorSetsCorrectHeight() {
-        grid = newGrid(10, 1, 0);
+        grid = newGrid(10, 1);
 
         assertEquals(10, grid.getHeight());
     }
 
     @Test
     void constructorSetsCorrectWidth() {
-        grid = newGrid(1, 10, 0);
+        grid = newGrid(1, 10);
 
         assertEquals(10, grid.getWidth());
     }
@@ -90,27 +90,18 @@ class GridTests {
     }
 
     private void testGetInsideBoundsAxB(int rows, int cols, int row, int col) {
-        grid = newGrid(rows, cols, 0);
+        grid = newGrid(rows, cols);
 
-        assertTrue(grid.get(row, col).isPresent());
+        assertTrue(grid.getCell(row, col).isPresent());
     }
 
     private void testGetOutsideBoundsAxB(int rows, int cols, int row, int col) {
-        grid = newGrid(rows, cols, 0);
+        grid = newGrid(rows, cols);
 
-        assertFalse(grid.get(row, col).isPresent());
+        assertFalse(grid.getCell(row, col).isPresent());
     }
 
-    private Grid newGrid(int rows, int cols, int bombs) {
-        return new Grid(populate(new Cell[rows][cols], bombs));
-    }
-
-    private Cell[][] populate(Cell[][] cells, int bombs) {
-        for (int i = 0; i < cells.length; i++) {
-            for (int j = 0; j < cells[i].length; j++) {
-                cells[i][j] = new Cell(bombs-- > 0, 0);
-            }
-        }
-        return cells;
+    private Grid newGrid(int height, int width) {
+        return new Grid.Builder(height, width).build();
     }
 }

@@ -35,7 +35,7 @@ public class RandomBombSupplier extends AbstractBombSupplier {
     }
 
     private Point toPoint(int index) {
-        return new Point((index - index % width) / width, index % width);
+        return Point.of((index - index % width) / width, index % width);
     }
 
     private class RandomExclusiveIntSupplier implements IntSupplier {

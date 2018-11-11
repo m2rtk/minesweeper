@@ -5,10 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 abstract class VisibleCell {
     int row, col;
+    Point location;
 
     private VisibleCell(int row, int col) {
         this.row = row;
         this.col = col;
+        this.location = Point.of(row, col);
     }
 
     static VisibleCell of(int row, int col, char c) {
@@ -70,7 +72,7 @@ abstract class VisibleCell {
         void assertMatchesActualCell(Cell cell) {
             assertTrue(
                     cell.isBomb(),
-                    "Cell at (" + row + ", " + col + ") should be bomb. " + cell
+                    "Cell at (" + row + ", " + col + ") should be markAsBomb. " + cell
             );
         }
     }

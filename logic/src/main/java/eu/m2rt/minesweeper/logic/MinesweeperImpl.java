@@ -4,9 +4,12 @@ import eu.m2rt.minesweeper.logic.exceptions.GameIndexOutOfBoundsException;
 import eu.m2rt.minesweeper.logic.exceptions.GameOverException;
 import eu.m2rt.minesweeper.logic.interfaces.Minesweeper;
 
-import static eu.m2rt.minesweeper.logic.MinesweeperState.State.LOSS;
-import static eu.m2rt.minesweeper.logic.MinesweeperState.State.PLAY;
-import static eu.m2rt.minesweeper.logic.MinesweeperState.State.WIN;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static eu.m2rt.minesweeper.logic.MinesweeperState.State.*;
 
 public class MinesweeperImpl implements Minesweeper {
     private MinesweeperState state;
@@ -25,23 +28,17 @@ public class MinesweeperImpl implements Minesweeper {
      * @throws GameIndexOutOfBoundsException if row or col is out of bounds.
      */
     public Minesweeper open(int row, int col) {
-        Cell cell = getCell(row, col);
-        Grid grid = state.getGrid();
-
-        if (cell.open().isBomb()) {
-            openAllBombs();
-            state = new MinesweeperState(grid, LOSS);
-        } else {
-            propagate(cell, row, col);
-
-            if (grid.getClosedCells().size() == grid.getNoOfBombs()) {
-                state = new MinesweeperState(grid, WIN);
-            } else {
-                state = new MinesweeperState(grid);
-            }
-        }
-
+        open(getCell(row, col));
+        setNewState();
         return this;
+    }
+
+    private void open(Cell cell) {
+        cell.open();
+
+        if ( ! cell.isBomb() ) {
+            propagate(cell);
+        }
     }
 
     /**
@@ -54,6 +51,47 @@ public class MinesweeperImpl implements Minesweeper {
         return this;
     }
 
+    /**
+     * Chords on cell if possible.
+     * @throws GameOverException if chord is called after the game has ended.
+     * @throws GameIndexOutOfBoundsException if row or col is out of bounds.
+     */
+    public Minesweeper chord(int row, int col) {
+        chord(getCell(row, col));
+        setNewState();
+        return this;
+    }
+
+    private void chord(Cell cell) {
+        if (cell.isClosed()) {
+            return;
+        }
+
+        Set<Cell> surroundingCells = state.getGrid().getSurroundingCells(cell);
+
+        long surroundingFlaggedCellsCount = surroundingCells.stream()
+                .filter(Cell::isFlagged)
+                .count();
+
+        if (cell.getNearbyBombs() != surroundingFlaggedCellsCount) {
+            return;
+        }
+
+        Set<Cell> surroundingNotFlaggedCells = surroundingCells.stream()
+                .filter(Predicate.not(Cell::isFlagged))
+                .filter(Cell::isClosed)
+                .collect(Collectors.toSet());
+
+        if (surroundingNotFlaggedCells.stream().anyMatch(Cell::hasBomb)) {
+            surroundingNotFlaggedCells.stream()
+                    .filter(Cell::hasBomb)
+                    .forEach(this::open);
+            return;
+        }
+
+        surroundingNotFlaggedCells.forEach(this::open);
+    }
+
     public MinesweeperState getState() {
         return state;
     }
@@ -64,17 +102,11 @@ public class MinesweeperImpl implements Minesweeper {
         }
 
         return state.getGrid()
-                .get(row, col)
+                .getCell(row, col)
                 .orElseThrow(GameIndexOutOfBoundsException::new);
     }
 
-    private void openAllBombs() {
-        state.getGrid()
-                .getCellsWithBombs()
-                .forEach(Cell::open);
-    }
-
-    private void propagate(Cell cell, int row, int col) {
+    private void propagate(Cell cell) {
         if (cell.isClosed()) {
             cell.open();
         }
@@ -83,15 +115,48 @@ public class MinesweeperImpl implements Minesweeper {
             return;
         }
 
-        for (int y = -1; y <= 1; y++) {
-            for (int x = -1; x <= 1; x++) {
-                final int newRow = row + y;
-                final int newCol = col + x;
+        Grid grid = state.getGrid();
+        cell.location.surroundingPoints().stream()
+                .map(grid::getCell)
+                .flatMap(Optional::stream)
+                .filter(Cell::isClosed)
+                .forEach(this::propagate);
+    }
 
-                state.getGrid().get(newRow, newCol)
-                        .filter(Cell::isClosed)
-                        .ifPresent(c -> propagate(c, newRow, newCol));
-            }
+    private void setNewState() {
+        if (gameIsLost()) {
+            state = lose();
+        } else if (gameIsWon()) {
+            state = win();
+        } else {
+            state = play();
         }
+    }
+
+    private boolean gameIsLost() {
+        return state.getGrid().getCellsWithBombs().stream().anyMatch(Cell::isOpen);
+    }
+
+    private boolean gameIsWon() {
+        return state.getGrid().getClosedCells().size() == state.getGrid().getNoOfBombs();
+    }
+
+    private MinesweeperState win() {
+        return state.newState(WIN);
+    }
+
+    private MinesweeperState lose() {
+        openAllBombs();
+        return state.newState(LOSS);
+    }
+
+    private void openAllBombs() {
+        state.getGrid()
+                .getCellsWithBombs()
+                .forEach(Cell::open);
+    }
+
+    private MinesweeperState play() {
+        return state.newState(PLAY);
     }
 }
