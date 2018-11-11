@@ -3,6 +3,10 @@ body {
     margin: 20px;
 }
 
+.game {
+    display: table;
+    margin: auto auto;
+}
 
 .board-row:after {
     clear: both;
@@ -16,22 +20,17 @@ body {
     float: left;
     font-size: 24px;
     font-weight: bold;
-    line-height: 34px;
-    height: 34px;
+    line-height: 0px;
+    height: 24px;
     margin-right: -1px;
     margin-top: -1px;
     padding: 0;
     text-align: center;
-    width: 34px;
+    width: 24px;
     outline: none;
 }
 
 .cell:focus {
     outline: none;
     background: #ddd;
-}
-
-.game {
-    display: flex;
-    flex-direction: row;
 }

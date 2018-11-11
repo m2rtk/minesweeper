@@ -8,7 +8,7 @@ function Cell(rowIndex, colIndex, state) {
         {
             onMouseDown: event => {
                 post_and_render(
-                    event.button == 0 ? 'open' : 'flag', 
+                    {0: 'open', 1: 'chord', 2: 'flag'}[event.button], 
                     rowIndex, 
                     colIndex
                 );
@@ -111,7 +111,7 @@ function handle_game_state(game) {
 function render_grid(grid) {
     ReactDOM.render(
         Board(grid.cells),
-        document.querySelector('#game')
+        document.querySelector('.board')
     );
 }
 
@@ -122,7 +122,7 @@ function render_state(state) {
             null,
             state
         ),
-        document.querySelector('#state')
+        document.querySelector('.state')
     )
 }
 
