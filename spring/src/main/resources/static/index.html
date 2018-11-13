@@ -1,0 +1,20 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minesweeper!</title>
+
+<script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<link rel="stylesheet" type="text/css" href="style.css">
+
+<div id="game">
+    <div id="board"></div>
+    <div id="state">
+        <button onclick="new_game()">New game</button>
+        <input id="height" type="number" value=16 required=true placeholder="h">
+        <input id="width"  type="number" value=16 required=true placeholder="w">
+        <input id="bombs"  type="number" value=40 required=true placeholder="b">
+    </div>
+</div>
+
+<script src="game.js"></script>

@@ -13,6 +13,7 @@
         <module>logic</module>
         <module>spring</module>
         <module>cli</module>
+        <module>spark</module>
     </modules>
 
     <properties>

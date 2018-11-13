@@ -1,0 +1,50 @@
+body {
+    font: 14px "Century Gothic", Futura, sans-serif;
+    margin: 20px;
+}
+
+#game {
+    display: table;
+    margin: auto auto;
+}
+
+.board-row:after {
+    clear: both;
+    content: "";
+    display: table;
+}
+
+.cell {
+    background: #f3f3f3;
+    border: 1px solid #777;
+    float: left;
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 0px;
+    height: 24px;
+    margin-right: -1px;
+    margin-top: -1px;
+    padding: 0;
+    text-align: center;
+    width: 24px;
+    outline: none;
+}
+
+.open {
+    background: #fff;
+}
+
+button, input {
+    border: 1px solid #999;
+    margin-top: 24px;
+    height: 24px;
+    margin-right: 6px;
+}
+
+input {
+    width: 48px;
+}
+
+.cell:focus {
+    outline: none;
+}
