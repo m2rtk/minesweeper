@@ -1,5 +1,6 @@
 'use strict';
 
+// For JSON protocol
 
 function Cell(rowIndex, colIndex, state) {
     var visible_state = get_visible_state(state);
