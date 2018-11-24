@@ -1,5 +1,6 @@
 package eu.m2rt.minesweeper.spring;
 
+import eu.m2rt.minesweeper.common.NewGameWrapper;
 import eu.m2rt.minesweeper.logic.MinesweeperImpl;
 import eu.m2rt.minesweeper.logic.MinesweeperState;
 import eu.m2rt.minesweeper.logic.RandomGridGenerator;

@@ -1,7 +1,7 @@
 package eu.m2rt.minesweeper.spark;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.m2rt.minesweeper.common.Minifier;
+import eu.m2rt.minesweeper.common.NewGameWrapper;
 import eu.m2rt.minesweeper.logic.MinesweeperImpl;
 import eu.m2rt.minesweeper.logic.RandomGridGenerator;
 import eu.m2rt.minesweeper.logic.exceptions.GameIndexOutOfBoundsException;
@@ -19,7 +19,6 @@ import static spark.Spark.*;
 
 public class MinesweeperSpark {
 
-    private static final ObjectMapper mapper = new ObjectMapper();
     private static final ConcurrentMap<String, Minesweeper> games = new ConcurrentHashMap<>();
 
     public static void main(String[] args) {
@@ -27,11 +26,11 @@ public class MinesweeperSpark {
         Spark.port(8080);
 
         path("/api", () -> {
-            post("/newgame",     API::newGame,   MinesweeperSpark::toJson);
-            post("/open",       API::open,      MinesweeperSpark::toJson);
-            post("/flag",       API::flag,      MinesweeperSpark::toJson);
-            post("/chord",      API::chord,     MinesweeperSpark::toJson);
-            get("/game",        API::game,      MinesweeperSpark::toJson);
+            post("/newgame",     API::newGame,    Minifier::toMinified);
+            post("/open",        API::open,       Minifier::toMinified);
+            post("/flag",        API::flag,       Minifier::toMinified);
+            post("/chord",       API::chord,      Minifier::toMinified);
+            get("/game",         API::game,       Minifier::toMinified);
         });
 
         exception(GameOverException.class, (exception, request, response) -> {
@@ -43,14 +42,6 @@ public class MinesweeperSpark {
             response.body("Selected cell is out of bounds");
             response.status(400);
         });
-    }
-
-    private static String toJson(Object obj) {
-        try {
-            return mapper.writeValueAsString(obj);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private static class API {
@@ -71,7 +62,9 @@ public class MinesweeperSpark {
         }
         private static Object flag(Request request, Response response) {
             CellRequest req = CellRequest.from(request);
-            return req.game().flag(req.row, req.col).getState();
+            req.game().flag(req.row, req.col);
+            return "OK";
+          //  return req.game().flag(req.row, req.col).getState();
         }
         private static Object chord(Request request, Response response) {
             CellRequest req = CellRequest.from(request);
@@ -81,7 +74,6 @@ public class MinesweeperSpark {
             IdRequest req = IdRequest.from(request);
             return req.game().getState();
         }
-
     }
 
     private static class NewGameRequest {

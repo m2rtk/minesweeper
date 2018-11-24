@@ -100,6 +100,26 @@ public class Cell {
         return open ? nearbyBombs : -1;
     }
 
+    public char getVisibleState() {
+        if (open) {
+            if (bomb) {
+                return 'X';
+            }
+
+            if (nearbyBombs == 0) {
+                return '-';
+            }
+
+            return String.valueOf(nearbyBombs).charAt(0);
+        }
+
+        if (flag) {
+            return 'F';
+        }
+
+        return '+';
+    }
+
     @Override
     public String toString() {
         return "Cell{" +

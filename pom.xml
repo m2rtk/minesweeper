@@ -14,6 +14,7 @@
         <module>spring</module>
         <module>cli</module>
         <module>spark</module>
+        <module>common</module>
     </modules>
 
     <properties>
